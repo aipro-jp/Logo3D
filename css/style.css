@@ -1,0 +1,233 @@
+/* Reset styles and make canvas fill the screen */
+body {
+    margin: 0;
+    /* overflow: hidden; */ /* Allow body to scroll if content is too long */
+    background-color: #f0f0f0;
+    font-family: sans-serif; /* Apply default font to body */
+}
+canvas {
+    display: block;
+    position: fixed; /* Keep canvas fixed in the background */
+    top: 0;
+    left: 0;
+    z-index: -1; /* Place canvas behind other content */
+    width: 100%;
+    height: 100%;
+}
+
+/* Styles for the always visible basic controls bar */
+#basicControlsContainer {
+    width: 100%;
+    z-index: 100;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px; /* Gap between all direct children, including category toggles */
+    box-sizing: border-box;
+}
+
+/* Styles for individual control groups within the basic controls bar,
+   including the new category toggle divs */
+#basicControlsContainer > div:not(#categorySelectionBar) { /* Exclude the category bar from this specific rule if it needs different styling */
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Gap between label and input within each group */
+}
+
+#textInput, #fontSelect, #materialSelect, #colorInput, #metalnessInput, #roughnessInput,
+#bloomStrength, #bloomRadius, #bloomThreshold,
+#dofFocus, #dofAperture, #dofMaxblur {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+#colorInput,
+#ambientColorInput, #directionalColorInput {
+    padding: 2px;
+    height: 30px;
+}
+
+ #metalnessInput, #roughnessInput,
+ #bloomStrength, #bloomRadius, #bloomThreshold,
+ #dofFocus, #dofAperture, #dofMaxblur,
+ #ambientIntensityInput, #directionalIntensityInput,
+ #directionalPosXInput, #directionalPosYInput, #directionalPosZInput {
+    width: 100px;
+ }
+
+ #basicControlsContainer label, /* Covers all labels in basicControlsContainer */
+ .settings-detail-panel label { /* Labels within detail panels */
+     font-weight: bold;
+     font-size: 14px;
+ }
+
+ .slider-value {
+     display: inline-block;
+     width: 30px;
+     text-align: right;
+     font-size: 14px;
+ }
+
+ .disabled-slider {
+     opacity: 0.5;
+     pointer-events: none;
+ }
+
+/* Styles for the wrapper of Category Toggles */
+#categorySelectionBar {
+    width: 100%; /* Force to take full width, ensuring it starts on a new line */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around; /* Or space-between, or flex-start */
+    padding-top: 10px;
+    margin-top: 10px; /* Add some space above this bar */
+    border-top: 1px solid #eee; /* Optional visual separator */
+    box-sizing: border-box;
+}
+/* Individual toggle groups within the bar */
+#categorySelectionBar > div {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Gap between checkbox and label within each toggle group */
+    margin: 5px; /* Add some margin around each toggle button for spacing when wrapped */
+}
+
+
+/* Styles for the category toggle checkboxes and their labels */
+.settings-category-toggle {
+    margin-right: 3px; /* Small space between checkbox and its label */
+}
+
+.settings-category-toggle + label {
+    /* Remove button-like styling */
+    padding: 0; /* Remove padding */
+    border: none; /* Remove border */
+    background-color: transparent; /* Remove background */
+    cursor: pointer;
+    transition: none; /* Remove transition */
+    font-weight: bold; /* Keep label bold like other controls */
+    color: #333; /* Default text color */
+    white-space: nowrap;
+}
+
+.settings-category-toggle:checked + label {
+    /* Style for checked state - e.g., slightly different color or underline */
+    color: #007bff; /* Example: blue color when checked */
+    /* text-decoration: underline; */ /* Optional: underline when checked */
+    background-color: transparent; /* Ensure no background change */
+    border: none; /* Ensure no border change */
+}
+.settings-category-toggle + label:hover {
+    /* Optional hover effect for the label */
+    color: #0056b3;
+    background-color: transparent; /* Ensure no background change on hover */
+}
+
+
+/* Styles for Detail Panels Container */
+#settingsDetailContainer {
+    display: none; /* Initially hide the container */
+    width: 100%;
+    padding: 20px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    /* min-height: 200px; */ /* Removed to prevent taking space when hidden */
+}
+
+.settings-detail-panel {
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    display: flex; /* Enables flexbox for its children (the control groups) */
+    flex-wrap: wrap; /* Allows control groups to wrap to the next line */
+    gap: 20px; /* Increased gap between control groups for better separation when wrapped */
+    margin-bottom: 20px;
+}
+.settings-detail-panel:last-child {
+    margin-bottom: 0;
+}
+
+/* Style for horizontal rule within detail panels */
+.detail-panel-hr {
+    width: 100%;
+    border-top: 1px solid #ccc;
+    margin: 10px 0;
+    border-bottom: none; /* Ensure it's just a single line */
+    border-left: none;
+    border-right: none;
+}
+
+
+.settings-detail-panel > div { /* Each control row within a detail panel */
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping for individual controls within a row */
+    align-items: center;
+    gap: 10px; /* Gap between label and control, or between controls in a row */
+}
+
+/* Specific style for panels that should lay out their direct children (control groups) in a row */
+.settings-detail-panel-row {
+    flex-direction: row; /* Override the default column direction for this specific panel type */
+    /* justify-content: flex-start; */ /* Align items to the start */
+}
+
+.settings-detail-panel > div > label {
+    margin-right: 5px; /* Space after label */
+    flex-shrink: 0; /* Prevent label from shrinking */
+}
+.settings-detail-panel > div > input[type="range"],
+.settings-detail-panel > div > select,
+.settings-detail-panel > div > input[type="color"],
+.settings-detail-panel > div > input[type="text"],
+.settings-detail-panel > div > button {
+    flex-grow: 1; /* Allow inputs to take available space */
+    min-width: 100px; /* Minimum width for inputs */
+}
+
+ /* Responsive adjustments */
+ @media (max-width: 768px) {
+    #categorySelectionBar {
+        justify-content: flex-start; /* Align toggles to start on smaller screens */
+        gap: 10px; /* Add gap between wrapped toggle items */
+    }
+    #categorySelectionBar > div { /* Each toggle item */
+        flex-basis: calc(50% - 10px); /* Try to fit two per row, adjust as needed */
+        /* Ensure label text can be seen if it wraps */
+    }
+    .settings-category-toggle + label {
+        white-space: normal; /* Allow label text to wrap on small screens if needed */
+    }
+
+    /* This rule makes label and input stack vertically INSIDE each control group on small screens,
+       EXCEPT for those in a settings-detail-panel-row */
+    .settings-detail-panel:not(.settings-detail-panel-row) > div {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    /* For rows, ensure they still wrap and align correctly on small screens if needed */
+    .settings-detail-panel-row > div { /* Each item in a row panel */
+        /* flex-basis: 100%; */ /* If you want each item in a row to take full width on small screens */
+    }
+
+    .settings-detail-panel > div > input[type="range"],
+    .settings-detail-panel > div > select,
+    .settings-detail-panel > div > input[type="color"],
+    .settings-detail-panel > div > input[type="text"],
+    .settings-detail-panel > div > button {
+        width: 100%;
+    }
+
+    #metalnessInput, #roughnessInput,
+    #bloomStrength, #bloomRadius, #bloomThreshold,
+    #dofFocus, #dofAperture, #dofMaxblur,
+    #ambientIntensityInput, #directionalIntensityInput,
+    #directionalPosXInput, #directionalPosYInput, #directionalPosZInput {
+       width: calc(100% - 40px);
+    }
+ }
