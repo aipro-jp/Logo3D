@@ -1,174 +1,248 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="ja">
 <head>
-    <title>Three.js 3D Text Logo Sample</title>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Logo Generator</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-
-    <!-- Always visible basic controls -->
+    <!-- Basic Controls Container -->
     <div id="basicControlsContainer">
-        <div>
-            <label for="textInput">Text:</label>
-            <input type="text" id="textInput" value="LOGO">
+        <div class="control-group">
+            <label for="textInput">ロゴテキスト:</label>
+            <input type="text" id="textInput" value="Hello 3D">
         </div>
-        <div>
-            <label for="fontSelect">Font:</label>
+        <div class="control-group">
+            <label for="fontSelect">フォント:</label>
             <select id="fontSelect">
                 <option value="helvetiker_regular">Helvetiker Regular</option>
+                <option value="helvetiker_bold">Helvetiker Bold</option>
                 <option value="optimer_regular">Optimer Regular</option>
+                <option value="optimer_bold">Optimer Bold</option>
                 <option value="gentilis_regular">Gentilis Regular</option>
+                <option value="gentilis_bold">Gentilis Bold</option>
                 <option value="droid/droid_sans_mono_regular">Droid Sans Mono</option>
                 <option value="droid/droid_serif_regular">Droid Serif</option>
-                <option value="gentilis_bold">Gentilis Bold</option>
-                <option value="helvetiker_bold">Helvetiker Bold</option>
-                <option value="optimer_bold">Optimer Bold</option>
             </select>
         </div>
-        <div>
-            <label for="materialSelect">Material:</label>
+        <div class="control-group">
+            <label for="materialSelect">マテリアルプリセット:</label>
             <select id="materialSelect">
-                <option value="standard_metal">Standard (Metal)</option>
-                <option value="standard_nonmetal">Standard (Non-Metal)</option>
-                <option value="gold" selected>Gold</option>
-                <option value="silver">Silver</option>
-                <option value="copper">Copper</option>
-                <option value="phong">Phong</option>
+                <option value="standard_nonmetal">標準 (非金属)</option>
+                <option value="standard_metal">標準 (金属)</option>
+                <option value="phong">Phong (光沢)</option>
+                <option value="gold" selected>ゴールド</option>
+                <option value="silver">シルバー</option>
+                <option value="copper">カッパー</option>
             </select>
         </div>
-        <div>
-            <label for="colorInput">Color:</label>
-            <input type="color" id="colorInput" value="#ffd700"> <!-- Gold color as default -->
+        <div class="control-group">
+            <label for="colorInput">カラー:</label>
+            <input type="color" id="colorInput" value="#FFD700"> <!-- Gold default color -->
         </div>
-        <div id="metalnessControl">
-            <label for="metalnessInput">Metalness:</label>
-            <input type="range" id="metalnessInput" min="0" max="1" step="0.01" value="1.0">
-            <span id="metalnessValue" class="slider-value">1.00</span>
+        <div class="control-group" id="metalnessControl">
+            <label for="metalnessInput">メタリック:</label>
+            <div style="display: flex; align-items: center;">
+                <input type="range" id="metalnessInput" min="0" max="1" step="0.01" value="1.0"> <!-- Gold default metalness -->
+                <span id="metalnessValue" style="margin-left: 10px; min-width: 30px;">1.00</span>
+            </div>
         </div>
-        <div id="roughnessControl">
-            <label for="roughnessInput">Roughness:</label>
-            <input type="range" id="roughnessInput" min="0" max="1" step="0.01" value="0.1"> <!-- Gold roughness -->
-            <span id="roughnessValue" class="slider-value">0.10</span>
+        <div class="control-group" id="roughnessControl">
+            <label for="roughnessInput">ラフネス:</label>
+            <div style="display: flex; align-items: center;">
+                <input type="range" id="roughnessInput" min="0" max="1" step="0.01" value="0.1"> <!-- Gold default roughness -->
+                <span id="roughnessValue" style="margin-left: 10px; min-width: 30px;">0.10</span>
+            </div>
         </div>
 
-        <!-- Category Toggles (Now direct children of basicControlsContainer) -->
-        <div id="categorySelectionBar">
-            <div><input type="checkbox" id="toggleLightingCategory" class="settings-category-toggle"
-                    name="settingsCategory"><label for="toggleLightingCategory">照明</label></div>
-            <div><input type="checkbox" id="toggleAnimationCategory" class="settings-category-toggle"
-                    name="settingsCategory"><label for="toggleAnimationCategory">アニメーション</label></div>
-            <div><input type="checkbox" id="togglePostProcessCategory" class="settings-category-toggle"
-                    name="settingsCategory"><label for="togglePostProcessCategory">ポストプロセス</label></div>
-            <div><input type="checkbox" id="toggleOtherCategory" class="settings-category-toggle"
-                    name="settingsCategory"><label for="toggleOtherCategory">その他</label></div>
+        <!-- Category Toggles Container -->
+        <div id="categoryTogglesContainer">
+            <div class="category-toggle-item">
+                <input type="checkbox" id="toggleLightingCategory" name="categoryToggle">
+                <label for="toggleLightingCategory">照明</label>
+            </div>
+            <div class="category-toggle-item">
+                <input type="checkbox" id="toggleAnimationCategory" name="categoryToggle">
+                <label for="toggleAnimationCategory">アニメーション</label>
+            </div>
+            <div class="category-toggle-item">
+                <input type="checkbox" id="togglePostProcessCategory" name="categoryToggle">
+                <label for="togglePostProcessCategory">ポストプロセス</label>
+            </div>
+            <div class="category-toggle-item">
+                <input type="checkbox" id="toggleOtherCategory" name="categoryToggle">
+                <label for="toggleOtherCategory">その他</label>
+            </div>
+        </div>
+
+        <!-- Video Recording Controls -->
+        <div id="videoRecordControlsContainer">
+            <button id="toggleRecordButton">動画を録画開始</button>
+            <select id="videoFormatSelect">
+                <option value="video/webm;codecs=vp9">WebM (VP9)</option>
+                <option value="video/webm;codecs=vp8">WebM (VP8)</option>
+                <option value="video/mp4">MP4 (H.264, ブラウザ依存)</option>
+            </select>
+            <span id="recordingStatus">● REC</span>
+            <a id="downloadLink" style="display:none;"></a>
         </div>
     </div> <!-- Closing basicControlsContainer -->
+
 
     <!-- Detail Panels Container -->
     <div id="settingsDetailContainer" style="display: none;">
         <!-- Lighting Controls Panel -->
-        <div id="lightingControlsWrapper" class="settings-detail-panel" style="display: none;">
-            <div><label for="ambientColorInput">Ambient Color:</label><input type="color" id="ambientColorInput"
-                    value="#606060"></div>
-            <div><label for="ambientIntensityInput">Ambient Intensity:</label><input type="range"
-                    id="ambientIntensityInput" min="0" max="3" step="0.01" value="1.0"><span id="ambientIntensityValue"
-                    class="slider-value">1.00</span></div>
-            <div><label for="directionalColorInput">Directional Color:</label><input type="color"
-                    id="directionalColorInput" value="#ffffff"></div>
-            <div><label for="directionalIntensityInput">Directional Intensity:</label><input type="range"
-                    id="directionalIntensityInput" min="0" max="3" step="0.01" value="1.0"><span
-                    id="directionalIntensityValue" class="slider-value">1.00</span></div>
-            <div><label for="directionalPosXInput">Light X:</label><input type="range" id="directionalPosXInput"
-                    min="-300" max="300" step="1" value="100"><span id="directionalPosXValue"
-                    class="slider-value">100</span></div>
-            <div><label for="directionalPosYInput">Light Y:</label><input type="range" id="directionalPosYInput" min="0"
-                    max="500" step="1" value="200"><span id="directionalPosYValue" class="slider-value">200</span></div>
-            <div><label for="directionalPosZInput">Light Z:</label><input type="range" id="directionalPosZInput"
-                    min="-300" max="300" step="1" value="100"><span id="directionalPosZValue"
-                    class="slider-value">100</span></div>
+        <div id="lightingControlsWrapper" class="settings-panel">
+            <h3>照明設定</h3>
+            <div class="slider-container">
+                <label for="ambientColorInput">環境光カラー:</label>
+                <input type="color" id="ambientColorInput" value="#606060">
+            </div>
+            <div class="slider-container">
+                <label for="ambientIntensityInput">環境光強度:</label>
+                <input type="range" id="ambientIntensityInput" min="0" max="3" step="0.01" value="1.0">
+                <span id="ambientIntensityValue">1.00</span>
+            </div>
+            <hr>
+            <div class="slider-container">
+                <label for="directionalColorInput">指向性ライトカラー:</label>
+                <input type="color" id="directionalColorInput" value="#ffffff">
+            </div>
+            <div class="slider-container">
+                <label for="directionalIntensityInput">指向性ライト強度:</label>
+                <input type="range" id="directionalIntensityInput" min="0" max="3" step="0.01" value="1.0">
+                <span id="directionalIntensityValue">1.00</span>
+            </div>
+            <div class="slider-container">
+                <label for="directionalPosXInput">指向性ライト X:</label>
+                <input type="range" id="directionalPosXInput" min="-200" max="200" step="1" value="100">
+                <span id="directionalPosXValue">100</span>
+            </div>
+            <div class="slider-container">
+                <label for="directionalPosYInput">指向性ライト Y:</label>
+                <input type="range" id="directionalPosYInput" min="0" max="400" step="1" value="200">
+                <span id="directionalPosYValue">200</span>
+            </div>
+            <div class="slider-container">
+                <label for="directionalPosZInput">指向性ライト Z:</label>
+                <input type="range" id="directionalPosZInput" min="-200" max="200" step="1" value="100">
+                <span id="directionalPosZValue">100</span>
+            </div>
         </div>
 
         <!-- Animation Controls Panel -->
-        <div id="animationControlsWrapper" class="settings-detail-panel" style="display: none;">
-            <div><input type="checkbox" id="toggleRotationAnimation"><label for="toggleRotationAnimation">回転</label>
+        <div id="animationControlsWrapper" class="settings-panel" style="display: none;">
+            <h3>アニメーション設定</h3>
+            <div class="checkbox-group">
+                <div class="checkbox-item"><input type="checkbox" id="toggleRotationAnimation"><label for="toggleRotationAnimation">回転</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="togglePulsingAnimation"><label for="togglePulsingAnimation">脈動</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="toggleFloatingAnimation"><label for="toggleFloatingAnimation">浮遊</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="toggleSwingingAnimation"><label for="toggleSwingingAnimation">揺れ</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="toggleEmissivePulseAnimation"><label for="toggleEmissivePulseAnimation">発光パルス</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="toggleColorPulseAnimation"><label for="toggleColorPulseAnimation">カラーパルス</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="toggleJitterAnimation"><label for="toggleJitterAnimation">ジッター</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="toggleOrbitAnimation"><label for="toggleOrbitAnimation">周回</label></div>
             </div>
-            <div><input type="checkbox" id="toggleFloatingAnimation"><label for="toggleFloatingAnimation">浮遊</label>
-            </div>
-            <div><input type="checkbox" id="togglePulsingAnimation"><label for="togglePulsingAnimation">パルス</label>
-            </div>
-            <div><input type="checkbox" id="toggleSwingingAnimation"><label for="toggleSwingingAnimation">スイング</label>
-            </div>
-            <div><input type="checkbox" id="toggleEmissivePulseAnimation"><label
-                    for="toggleEmissivePulseAnimation">発光パルス</label></div>
-            <div><input type="checkbox" id="toggleColorPulseAnimation"><label
-                    for="toggleColorPulseAnimation">カラーパルス</label></div>
-            <div><input type="checkbox" id="toggleJitterAnimation"><label for="toggleJitterAnimation">ジッター</label></div>
-            <div><input type="checkbox" id="toggleOrbitAnimation"><label for="toggleOrbitAnimation">オービット</label></div>
-            <div><button id="resetAnimationsButton">アニメーションリセット</button></div>
+            <button id="resetAnimationsButton">アニメーションリセット</button>
         </div>
 
         <!-- Post-Processing Controls Panel -->
-        <div id="postProcessingControlsWrapper" class="settings-detail-panel" style="display: none;">
-            <div><label for="toggleBloomEffect">ブルームエフェクト:</label><input type="checkbox" id="toggleBloomEffect"></div>
-            <div class="bloom-slider-control" style="display: none;"><label for="bloomStrength">強度:</label><input
-                    type="range" id="bloomStrength" min="0" max="3" step="0.01" value="0.5"><span
-                    id="bloomStrengthValue" class="slider-value">0.50</span></div>
-            <div class="bloom-slider-control" style="display: none;"><label for="bloomRadius">半径:</label><input
-                    type="range" id="bloomRadius" min="0" max="1" step="0.01" value="0.4"><span id="bloomRadiusValue"
-                    class="slider-value">0.40</span></div>
-            <div class="bloom-slider-control" style="display: none;"><label for="bloomThreshold">しきい値:</label><input
-                    type="range" id="bloomThreshold" min="0" max="1" step="0.01" value="0.85"><span
-                    id="bloomThresholdValue" class="slider-value">0.85</span></div>
-            <hr class="detail-panel-hr">
-            <div><label for="toggleDofEffect">被写界深度(DOF):</label><input type="checkbox" id="toggleDofEffect"></div>
-            <div class="dof-slider-control" style="display: none;"><label for="dofFocus">焦点距離:</label><input
-                    type="range" id="dofFocus" min="10" max="3000" step="1" value="150"><span id="dofFocusValue"
-                    class="slider-value">150</span></div>
-            <div class="dof-slider-control" style="display: none;"><label for="dofAperture">絞り:</label><input
-                    type="range" id="dofAperture" min="0" max="10" step="0.01" value="0.5"><span id="dofApertureValue"
-                    class="slider-value">0.50</span></div>
-            <div class="dof-slider-control" style="display: none;"><label for="dofMaxblur">最大ぼかし:</label><input
-                    type="range" id="dofMaxblur" min="0" max="0.01" step="0.0001" value="0.005"><span
-                    id="dofMaxblurValue" class="slider-value">0.005</span></div>
+        <div id="postProcessingControlsWrapper" class="settings-panel" style="display: none;">
+            <h3>ポストプロセス設定</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" id="toggleBloomEffect">
+                <label for="toggleBloomEffect">ブルーム効果</label>
+            </div>
+            <div class="slider-container bloom-slider-control" style="display:none;">
+                <label for="bloomStrength">強度:</label>
+                <input type="range" id="bloomStrength" min="0" max="3" step="0.01" value="0.5">
+                <span id="bloomStrengthValue">0.50</span>
+            </div>
+            <div class="slider-container bloom-slider-control" style="display:none;">
+                <label for="bloomRadius">半径:</label>
+                <input type="range" id="bloomRadius" min="0" max="1" step="0.01" value="0.4">
+                <span id="bloomRadiusValue">0.40</span>
+            </div>
+            <div class="slider-container bloom-slider-control" style="display:none;">
+                <label for="bloomThreshold">しきい値:</label>
+                <input type="range" id="bloomThreshold" min="0" max="1" step="0.01" value="0.85">
+                <span id="bloomThresholdValue">0.85</span>
+            </div>
+            <hr>
+            <div class="checkbox-item">
+                <input type="checkbox" id="toggleDofEffect">
+                <label for="toggleDofEffect">被写界深度 (DOF)</label>
+            </div>
+            <div class="slider-container dof-slider-control" style="display:none;">
+                <label for="dofFocus">焦点距離:</label>
+                <input type="range" id="dofFocus" min="10" max="500" step="1" value="150">
+                <span id="dofFocusValue">150</span>
+            </div>
+            <div class="slider-container dof-slider-control" style="display:none;">
+                <label for="dofAperture">絞り:</label>
+                <input type="range" id="dofAperture" min="0" max="10" step="0.1" value="0.5">
+                <span id="dofApertureValue">0.50</span>
+            </div>
+            <div class="slider-container dof-slider-control" style="display:none;">
+                <label for="dofMaxblur">最大ぼかし:</label>
+                <input type="range" id="dofMaxblur" min="0" max="0.01" step="0.0001" value="0.005">
+                <span id="dofMaxblurValue">0.0050</span>
+            </div>
         </div>
 
         <!-- Other Settings Panel -->
-        <div id="otherSettingsWrapper" class="settings-detail-panel settings-detail-panel-row" style="display: none;">
-            <div>
-                <input type="checkbox" id="toggleFloorVisibility" checked><label
-                    for="toggleFloorVisibility">床の表示</label>
+        <div id="otherSettingsWrapper" class="settings-panel" style="display: none;">
+            <h3>その他設定</h3>
+            <div class="checkbox-item">
+                <input type="checkbox" id="toggleFloorVisibility" checked>
+                <label for="toggleFloorVisibility">床を表示</label>
             </div>
-            <div>
-                <input type="checkbox" id="toggleParticleEffect"><label for="toggleParticleEffect">パーティクルエフェクト</label>
+            <div class="checkbox-item">
+                <input type="checkbox" id="toggleParticleEffect">
+                <label for="toggleParticleEffect">パーティクルエフェクト</label>
             </div>
         </div>
     </div>
 
+    <!-- Help Button and Panel -->
+    <div id="helpContainer">
+        <button id="helpButton">?</button>
+        <div id="helpPanel" style="display: none;">
+            <h4>マウス操作ヘルプ</h4>
+            <ul>
+                <li><strong>左ドラッグ:</strong> ロゴを中心に視点を回転</li>
+                <li><strong>右ドラッグ:</strong> 視点を平行移動 (パン)</li>
+                <li><strong>Ctrl + 左ドラッグ:</strong> 視点を平行移動 (パン)</li>
+                <li><strong>マウスホイール:</strong> ズームイン / ズームアウト</li>
+            </ul>
+            <p style="font-size: 0.8em; text-align: center;">(クリックで閉じる)</p>
+        </div>
+    </div>
+
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FontLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/TextGeometry.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/pmrem/PMREMGenerator.js"></script> --> <!-- Not a UMD module -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/BokehShader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/BokehPass.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Reflector.js"></script>
 
-    <!-- Application Scripts (Order can be important) -->
     <script src="js/sceneSetup.js" defer></script>
     <script src="js/textManager.js" defer></script>
     <script src="js/postProcessing.js" defer></script>
     <script src="js/animations.js" defer></script>
+    <script src="js/videoRecorder.js" type="module" defer></script>
     <script src="js/uiControls.js" defer></script>
-    <script src="js/main.js" defer></script>
+    <script src="js/main.js" type="module" defer></script>
 </body>
-
 </html>

@@ -1,233 +1,235 @@
-/* Reset styles and make canvas fill the screen */
+/* General body styling */
 body {
     margin: 0;
-    /* overflow: hidden; */ /* Allow body to scroll if content is too long */
-    background-color: #f0f0f0;
-    font-family: sans-serif; /* Apply default font to body */
+    overflow: hidden; /* Prevent scrollbars from Three.js canvas */
+    font-family: 'Arial', sans-serif;
+    background-color: #1e1e1e; /* Dark background for the page */
+    color: #fff; /* White text for better contrast */
+    display: flex;
+    flex-direction: column; /* Stack canvas and controls vertically */
+    height: 100vh; /* Full viewport height */
 }
+
+/* Canvas container to ensure it doesn't overlap controls */
 canvas {
-    display: block;
-    position: fixed; /* Keep canvas fixed in the background */
-    top: 0;
-    left: 0;
-    z-index: -1; /* Place canvas behind other content */
-    width: 100%;
-    height: 100%;
+    display: block; /* Remove extra space below canvas */
+    width: 100%; /* 横幅はそのまま */
+    flex-grow: 1; /* 利用可能な垂直方向のスペースを最大限使うように */
+    min-height: 0; /* canvasが内容によって不必要に大きくなるのを防ぐ */
 }
 
-/* Styles for the always visible basic controls bar */
+
+/* Basic Controls Container Styling */
 #basicControlsContainer {
-    width: 100%;
-    z-index: 100;
     padding: 10px;
-    background-color: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #2a2a2a; /* Slightly lighter than body for distinction */
+    border-bottom: 1px solid #444; /* 枠線は維持 */
+    flex-shrink: 0; /* このコンテナがスペース不足で縮まないようにする */
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 15px; /* Gap between all direct children, including category toggles */
-    box-sizing: border-box;
+    flex-wrap: wrap; /* Allow items to wrap to next line on smaller screens */
+    gap: 15px; /* Spacing between control groups */
+    align-items: center; /* Align items vertically */
+    justify-content: flex-start; /* Align items to the start */
 }
 
-/* Styles for individual control groups within the basic controls bar,
-   including the new category toggle divs */
-#basicControlsContainer > div:not(#categorySelectionBar) { /* Exclude the category bar from this specific rule if it needs different styling */
+.control-group {
     display: flex;
-    align-items: center;
-    gap: 5px; /* Gap between label and input within each group */
+    flex-direction: column; /* Stack label and input vertically */
+    gap: 5px; /* Space between label and input */
 }
 
-#textInput, #fontSelect, #materialSelect, #colorInput, #metalnessInput, #roughnessInput,
-#bloomStrength, #bloomRadius, #bloomThreshold,
-#dofFocus, #dofAperture, #dofMaxblur {
-    padding: 5px;
-    border: 1px solid #ccc;
+.control-group label {
+    font-size: 0.9em;
+    color: #ccc;
+}
+
+.control-group input[type="text"],
+.control-group select,
+.control-group input[type="color"] {
+    padding: 8px;
     border-radius: 4px;
-    font-size: 14px;
+    border: 1px solid #555;
+    background-color: #333;
+    color: #fff;
 }
 
-#colorInput,
-#ambientColorInput, #directionalColorInput {
-    padding: 2px;
-    height: 30px;
+.control-group input[type="color"] {
+    min-width: 100px; /* Ensure color picker is a decent size */
 }
 
- #metalnessInput, #roughnessInput,
- #bloomStrength, #bloomRadius, #bloomThreshold,
- #dofFocus, #dofAperture, #dofMaxblur,
- #ambientIntensityInput, #directionalIntensityInput,
- #directionalPosXInput, #directionalPosYInput, #directionalPosZInput {
-    width: 100px;
- }
 
- #basicControlsContainer label, /* Covers all labels in basicControlsContainer */
- .settings-detail-panel label { /* Labels within detail panels */
-     font-weight: bold;
-     font-size: 14px;
- }
+/* Settings Detail Container Styling */
+#settingsDetailContainer {
+    padding: 15px;
+    background-color: #252525; /* Slightly different dark shade */
+    border-top: 1px solid #444;
+    overflow-y: auto; /* 内容がはみ出たら縦スクロールを許可 (これは維持) */
+    max-height: 25vh; /* パネルの最大の高さをビューポートの高さの25%に設定 (少し低くしました) */
+    flex-shrink: 0; /* このコンテナもスペース不足で縮まないようにする */
+    display: none; /* Initially hidden, shown by JS */
+}
 
- .slider-value {
-     display: inline-block;
-     width: 30px;
-     text-align: right;
-     font-size: 14px;
- }
+.settings-panel {
+    /* margin-bottom: 20px; */ /* Space between panels - Removed */
+    display: flex; /* Enable flexbox for children */
+    flex-wrap: wrap; /* Allow children to wrap to the next line */
+    gap: 10px; /* Spacing between child elements (sliders, checkboxes, etc.) - Increased for readability */
+    align-items: flex-start; /* Align items to the start of the cross axis */
+}
 
- .disabled-slider {
-     opacity: 0.5;
-     pointer-events: none;
- }
+.settings-panel h3 {
+    margin-top: 0;
+    color: #00aaff; /* Accent color for panel titles */
+    border-bottom: 1px solid #444;
+    padding-bottom: 5px;
+    display: none; /* Hide the panel titles */
+}
 
-/* Styles for the wrapper of Category Toggles */
-#categorySelectionBar {
-    width: 100%; /* Force to take full width, ensuring it starts on a new line */
+.slider-container {
+    /* margin-bottom: 10px; */ /* Replaced by parent's gap */
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Internal gap for label, input, span - Increased for readability */
+    flex: 0 1 auto; /* Do not grow, shrink if needed, width based on content */
+}
+
+.slider-container label {
+    /* min-width: 100px; */ /* Removed to allow natural width */
+    white-space: nowrap; /* Prevent label text from wrapping */
+}
+
+.slider-container input[type="range"] {
+    flex-grow: 1;
+    min-width: 60px;  /* Ensure slider has a minimum usable width */
+    max-width: 100px; /* Limit the maximum width of the slider */
+}
+
+.slider-container span {
+    min-width: 20px; /* Space for value display */
+    text-align: right;
+}
+
+.disabled-slider {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.checkbox-group {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around; /* Or space-between, or flex-start */
-    padding-top: 10px;
-    margin-top: 10px; /* Add some space above this bar */
-    border-top: 1px solid #eee; /* Optional visual separator */
-    box-sizing: border-box;
+    gap: 8px; /* Adjusted gap for consistency - Increased for readability */
+    /* margin-bottom: 10px; */ /* Rely on parent's gap for spacing */
+    /* flex-basis: 100%; */ /* Allow checkbox groups to flow with other items */
 }
-/* Individual toggle groups within the bar */
-#categorySelectionBar > div {
+
+/* Hide hr elements specifically within the lighting controls panel */
+#settingsDetailContainer #lightingControlsWrapper hr {
+    display: none;
+}
+
+.checkbox-item {
     display: flex;
     align-items: center;
-    gap: 5px; /* Gap between checkbox and label within each toggle group */
-    margin: 5px; /* Add some margin around each toggle button for spacing when wrapped */
+    gap: 5px;
 }
 
-
-/* Styles for the category toggle checkboxes and their labels */
-.settings-category-toggle {
-    margin-right: 3px; /* Small space between checkbox and its label */
+/* Category Toggles Styling */
+#categoryTogglesContainer {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    align-items: center; /* Align items vertically */
+    gap: 10px; /* Reduced gap for items within this container */
+    padding: 0;
+    background-color: transparent;
+    border: none;
 }
 
-.settings-category-toggle + label {
-    /* Remove button-like styling */
-    padding: 0; /* Remove padding */
-    border: none; /* Remove border */
-    background-color: transparent; /* Remove background */
+.category-toggle-item {
+    display: flex;
+    align-items: center; /* Align items vertically in the center */
+    gap: 5px; /* Space between checkbox/label pairs, reduced from 15px */
+}
+
+/* Video Recording Controls */
+#videoRecordControlsContainer {
+    display: flex; /* Arrange button and select horizontally */
+    align-items: center; /* Vertically align items */
+    gap: 10px; /* Space between button, select, and status */
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    color: #fff; /* White text for better contrast */
+}
+
+#videoRecordControlsContainer button,
+#videoRecordControlsContainer select {
+    padding: 8px 12px;
+    margin: 0; /* Remove specific margins if using gap */
+    border: 1px solid #555;
+    background-color: #333;
+    color: #fff;
+    border-radius: 4px;
     cursor: pointer;
-    transition: none; /* Remove transition */
-    font-weight: bold; /* Keep label bold like other controls */
-    color: #333; /* Default text color */
-    white-space: nowrap;
 }
 
-.settings-category-toggle:checked + label {
-    /* Style for checked state - e.g., slightly different color or underline */
-    color: #007bff; /* Example: blue color when checked */
-    /* text-decoration: underline; */ /* Optional: underline when checked */
-    background-color: transparent; /* Ensure no background change */
-    border: none; /* Ensure no border change */
-}
-.settings-category-toggle + label:hover {
-    /* Optional hover effect for the label */
-    color: #0056b3;
-    background-color: transparent; /* Ensure no background change on hover */
+#videoRecordControlsContainer button:hover,
+#videoRecordControlsContainer select:hover {
+    background-color: #444;
 }
 
-
-/* Styles for Detail Panels Container */
-#settingsDetailContainer {
-    display: none; /* Initially hide the container */
-    width: 100%;
-    padding: 20px;
-    background-color: #ffffff;
-    box-sizing: border-box;
-    /* min-height: 200px; */ /* Removed to prevent taking space when hidden */
+#videoRecordControlsContainer button:disabled {
+    background-color: #2a2a2a;
+    color: #666;
+    cursor: not-allowed;
 }
 
-.settings-detail-panel {
-    padding: 15px;
-    border: 1px solid #e0e0e0;
+#recordingStatus {
+    display: none;
+    margin-left: 0; /* Remove specific margins if using gap */
+    color: #ff6347; /* Tomato red for REC */
+    font-weight: bold;
+}
+
+/* Change cursor for clickable elements */
+input[type="checkbox"],
+.category-toggle-item label,
+.checkbox-item label,
+#resetAnimationsButton { /* Assuming this is the ID for the reset button */
+    cursor: pointer;
+}
+
+/* Help Button and Panel Styling */
+#helpContainer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000; /* Ensure it's above other elements */
+}
+
+#helpButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+#helpPanel {
+    position: absolute;
+    bottom: 50px; /* Position above the button */
+    right: 0;
+    width: 280px;
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
     border-radius: 5px;
-    background-color: #f9f9f9;
-    display: flex; /* Enables flexbox for its children (the control groups) */
-    flex-wrap: wrap; /* Allows control groups to wrap to the next line */
-    gap: 20px; /* Increased gap between control groups for better separation when wrapped */
-    margin-bottom: 20px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    font-size: 0.9em;
+    cursor: pointer; /* Panel itself can be clicked to close */
 }
-.settings-detail-panel:last-child {
-    margin-bottom: 0;
-}
-
-/* Style for horizontal rule within detail panels */
-.detail-panel-hr {
-    width: 100%;
-    border-top: 1px solid #ccc;
-    margin: 10px 0;
-    border-bottom: none; /* Ensure it's just a single line */
-    border-left: none;
-    border-right: none;
-}
-
-
-.settings-detail-panel > div { /* Each control row within a detail panel */
-    display: flex;
-    flex-wrap: wrap; /* Allow wrapping for individual controls within a row */
-    align-items: center;
-    gap: 10px; /* Gap between label and control, or between controls in a row */
-}
-
-/* Specific style for panels that should lay out their direct children (control groups) in a row */
-.settings-detail-panel-row {
-    flex-direction: row; /* Override the default column direction for this specific panel type */
-    /* justify-content: flex-start; */ /* Align items to the start */
-}
-
-.settings-detail-panel > div > label {
-    margin-right: 5px; /* Space after label */
-    flex-shrink: 0; /* Prevent label from shrinking */
-}
-.settings-detail-panel > div > input[type="range"],
-.settings-detail-panel > div > select,
-.settings-detail-panel > div > input[type="color"],
-.settings-detail-panel > div > input[type="text"],
-.settings-detail-panel > div > button {
-    flex-grow: 1; /* Allow inputs to take available space */
-    min-width: 100px; /* Minimum width for inputs */
-}
-
- /* Responsive adjustments */
- @media (max-width: 768px) {
-    #categorySelectionBar {
-        justify-content: flex-start; /* Align toggles to start on smaller screens */
-        gap: 10px; /* Add gap between wrapped toggle items */
-    }
-    #categorySelectionBar > div { /* Each toggle item */
-        flex-basis: calc(50% - 10px); /* Try to fit two per row, adjust as needed */
-        /* Ensure label text can be seen if it wraps */
-    }
-    .settings-category-toggle + label {
-        white-space: normal; /* Allow label text to wrap on small screens if needed */
-    }
-
-    /* This rule makes label and input stack vertically INSIDE each control group on small screens,
-       EXCEPT for those in a settings-detail-panel-row */
-    .settings-detail-panel:not(.settings-detail-panel-row) > div {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    /* For rows, ensure they still wrap and align correctly on small screens if needed */
-    .settings-detail-panel-row > div { /* Each item in a row panel */
-        /* flex-basis: 100%; */ /* If you want each item in a row to take full width on small screens */
-    }
-
-    .settings-detail-panel > div > input[type="range"],
-    .settings-detail-panel > div > select,
-    .settings-detail-panel > div > input[type="color"],
-    .settings-detail-panel > div > input[type="text"],
-    .settings-detail-panel > div > button {
-        width: 100%;
-    }
-
-    #metalnessInput, #roughnessInput,
-    #bloomStrength, #bloomRadius, #bloomThreshold,
-    #dofFocus, #dofAperture, #dofMaxblur,
-    #ambientIntensityInput, #directionalIntensityInput,
-    #directionalPosXInput, #directionalPosYInput, #directionalPosZInput {
-       width: calc(100% - 40px);
-    }
- }

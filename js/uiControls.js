@@ -74,15 +74,9 @@ function initUIEventListeners() {
     });
 
     // --- Other Toggles (Floor, Particles) ---
-    if (toggleFloorVisibility && plane && planeMaterial) { // plane & planeMaterial are global
+    if (toggleFloorVisibility && plane) { // plane is global
         toggleFloorVisibility.addEventListener('change', function () {
-            if (this.checked) {
-                plane.visible = true;
-                // planeMaterial.transparent = false; // Assuming you want it opaque when visible
-                // planeMaterial.opacity = 1.0;
-            } else {
-                plane.visible = false;
-            }
+            plane.visible = this.checked;
         });
     }
 
@@ -111,6 +105,20 @@ function initUIEventListeners() {
         dofFocusInput.addEventListener('input', updateDofEffectUI);
         dofApertureInput.addEventListener('input', updateDofEffectUI);
         dofMaxblurInput.addEventListener('input', updateDofEffectUI);
+    }
+
+    // Help Panel Toggle
+    const helpButton = document.getElementById('helpButton');
+    const helpPanel = document.getElementById('helpPanel');
+
+    if (helpButton && helpPanel) {
+        helpButton.addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevent click from immediately closing panel if panel is also a close trigger
+            helpPanel.style.display = helpPanel.style.display === 'none' ? 'block' : 'none';
+        });
+        helpPanel.addEventListener('click', function() {
+            helpPanel.style.display = 'none';
+        });
     }
 
     // Initial UI updates
