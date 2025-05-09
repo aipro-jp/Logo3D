@@ -1,4 +1,4 @@
-# Logo3D - あなただけの動く3Dロゴジェネレーター
+# Logo3D - HTML、CSS、JavaScriptで作る3Dロゴジェネレーター
 
 [![AIScript](https://img.shields.io/badge/AI%20Assisted-Yes-brightgreen)](https://gemini.google.com/) <!-- AI支援で作成した場合のバッジ例 -->
 
