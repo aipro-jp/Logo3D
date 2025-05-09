@@ -1,20 +1,8 @@
 import { initVideoRecorder } from './videoRecorder.js';
-// Import necessary Three.js components if using modules (ES6)
-// import * as THREE from 'three'; // Or specific imports
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-// import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
-// import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
-// import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-// import { PMREMGenerator } from 'three/examples/jsm/pmrem/PMREMGenerator.js';
-// import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-// import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-// import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-// import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js';
-// import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
 
-// For script tag usage, these are globally available via THREE object.
+// scriptタグで使用する場合、これらはTHREEオブジェクト経由でグローバルに利用可能です。
 
-// Global variables (consider encapsulating these later if project grows)
+// グローバル変数 (プロジェクトが大きくなる場合は、後でカプセル化を検討してください)
 window.scene = null;
 window.camera = null;
 window.renderer = null;
@@ -22,11 +10,11 @@ window.controls = null;
 window.composer = null;
 window.bloomPass = null;
 window.bokehPass = null;
-window.passResolutionX = 1; // Default, will be updated
-window.passResolutionY = 1; // Default, will be updated
+window.passResolutionX = 1; // デフォルト値、後で更新されます
+window.passResolutionY = 1; // デフォルト値、後で更新されます
 
 window.plane = null;
-// window.planeMaterial = null; // Reflector handles its own material for reflection
+// window.planeMaterial = null; // Reflectorは反射用の独自マテリアルを扱います
 
 window.ambientLight = null;
 window.directionalLight = null;
@@ -37,7 +25,7 @@ window.loadedFont = null;
 window.textMesh = null;
 window.textMaterial = null; // This will hold the current material for the text
 
-// UI Elements (ensure these IDs match your HTML)
+// UI要素 (これらのIDがHTMLと一致することを確認してください)
 window.textInput = document.getElementById('textInput');
 window.fontSelect = document.getElementById('fontSelect');
 window.materialSelect = document.getElementById('materialSelect');
@@ -103,39 +91,39 @@ window.dofMaxblurInput = document.getElementById('dofMaxblur');
 window.dofMaxblurValue = document.getElementById('dofMaxblurValue');
 
 
-// Clock for animations
+// アニメーション用クロック
 const clock = new THREE.Clock();
 
-// --- Initialization Function ---
+// --- 初期化関数 ---
 function init() {
-    // Scene
+    // シーン
     window.scene = new THREE.Scene();
-    window.scene.background = new THREE.Color(0xcce0ff); // Light blue background
-    window.scene.fog = new THREE.Fog(0xcce0ff, 200, 500); // Fog matching background
+    window.scene.background = new THREE.Color(0xcce0ff); // 明るい青色の背景
+    window.scene.fog = new THREE.Fog(0xcce0ff, 200, 500); // 背景に合わせたフォグ
 
-    // Camera
-    window.camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000); // FOVを75から50に уменьしました
-    window.camera.position.set(0, 75, 200); // Z位置を150から200に遠ざけました
+    // カメラ
+    window.camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000); // FOVを75から50に変更
+    window.camera.position.set(0, 75, 200); // Z位置を150から200に変更
     
-    // Renderer
-    window.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); // preserveDrawingBuffer for recording
+    // レンダラー
+    window.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); // preserveDrawingBuffer: 録画用
     window.renderer.setSize(window.innerWidth, window.innerHeight);
     window.renderer.shadowMap.enabled = true;
     window.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     document.body.appendChild(window.renderer.domElement);
 
-    // Post-processing resolution
+    // ポストプロセッシング解像度
     window.passResolutionX = Math.max(1, window.innerWidth);
     window.passResolutionY = Math.max(1, window.innerHeight);
 
-    // Initialize other modules/components
-    initSceneSetup(); // From sceneSetup.js - sets up plane, lights, controls, env map, particles
-    initTextManager(); // From textManager.js - loads initial font and text
-    initPostProcessing(); // From postProcessing.js - sets up composer and passes
-    initUIEventListeners(); // From uiControls.js - sets up all UI event listeners
+    // 他のモジュール/コンポーネントを初期化
+    initSceneSetup();     // sceneSetup.js より - 平面、ライト、コントロール、環境マップ、パーティクルを設定
+    initTextManager();    // textManager.js より - 初期フォントとテキストを読み込み
+    initPostProcessing(); // postProcessing.js より - コンポーザーとパスを設定
+    initUIEventListeners(); // uiControls.js より - すべてのUIイベントリスナーを設定
 
-    // Initialize Video Recorder
-    // Ensure renderer.domElement is available
+    // ビデオレコーダーを初期化
+    // renderer.domElement が利用可能であることを確認
     if (window.renderer && window.renderer.domElement) {
         const recorderInitialized = initVideoRecorder(
             window.renderer.domElement,
@@ -151,27 +139,27 @@ function init() {
         console.error("Renderer or renderer.domElement not available for video recorder initialization.");
     }
 
-    // Start animation loop
+    // アニメーションループを開始
     animate();
     console.log('Application initialized and animation loop started.');
 }
 
-// --- Animation Loop ---
+// --- アニメーションループ ---
 function animate() {
     requestAnimationFrame(animate);
 
     const elapsedTime = clock.getElapsedTime();
 
-    // Update animations
-    updateAllAnimations(elapsedTime); // From animations.js
+    // アニメーションを更新
+    updateAllAnimations(elapsedTime);
 
-    // Update particles (if they have their own animation logic beyond what's in updateAllAnimations)
-    // updateParticles(elapsedTime); // Example if particles had separate update
+    // パーティクルを更新 (updateAllAnimations とは別に独自のロジックがある場合)
+    // updateParticles(elapsedTime); // パーティクルに個別の更新がある場合の例
 
-    // Update controls
+    // コントロールを更新
     if (window.controls) window.controls.update();
 
-    // Render scene
+    // シーンをレンダリング
     if (window.composer) {
         window.composer.render();
     } else if (window.renderer && window.scene && window.camera) {
@@ -179,14 +167,14 @@ function animate() {
     }
 }
 
-// --- Window Resize Handler ---
+// --- ウィンドウリサイズハンドラ ---
 function onWindowResize() {
     if (window.camera && window.renderer) {
         window.camera.aspect = window.innerWidth / window.innerHeight;
         window.camera.updateProjectionMatrix();
         window.renderer.setSize(window.innerWidth, window.innerHeight);
 
-        // Update post-processing resolution and pass sizes
+        // ポストプロセッシングの解像度とパスサイズを更新
         window.passResolutionX = Math.max(1, window.innerWidth);
         window.passResolutionY = Math.max(1, window.innerHeight);
 
@@ -194,25 +182,25 @@ function onWindowResize() {
             window.composer.setSize(window.innerWidth, window.innerHeight);
         }
         if (window.bloomPass) {
-            // UnrealBloomPass constructor takes Vector2, but size can be updated if needed
-            // bloomPass.setSize(window.innerWidth, window.innerHeight); // Check if setSize is available or if re-creation is needed
+            // UnrealBloomPassのコンストラクタはVector2を取るが、必要に応じてサイズを更新可能
+            // bloomPass.setSize(window.innerWidth, window.innerHeight); // setSizeが利用可能か、再作成が必要か確認
         }
         if (window.bokehPass) {
-            // BokehPass might need specific update or re-creation for resolution changes
-            // bokehPass.uniforms['aspect'].value = window.innerWidth / window.innerHeight; // Example
+            // BokehPassは解像度変更のために特定の更新または再作成が必要な場合がある
+            // bokehPass.uniforms['aspect'].value = window.innerWidth / window.innerHeight;
         }
-        // Call the specific resize handler for post-processing if it exists
-        // onPostProcessingResize(); // Assuming this function handles detailed pass resizing
+        // ポストプロセッシング用の特定のリサイズハンドラが存在する場合は呼び出す
+        // onPostProcessingResize(); // この関数が詳細なパスのリサイズを処理すると仮定
     }
 }
 window.addEventListener('resize', onWindowResize);
 
-// --- Start the application ---
-// Ensure DOM is fully loaded before initializing, especially if scripts are in <head>
-// However, with `defer` on script tags, this is usually not an issue.
-// For robustness:
+// --- アプリケーションを開始 ---
+// 初期化前にDOMが完全に読み込まれていることを確認 (特にスクリプトが<head>内にある場合)
+// ただし、scriptタグに `defer` があれば、通常これは問題になりません。
+// 堅牢性のために:
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
-    init(); // Or DOMContentLoaded has already fired
+    init(); // または、DOMContentLoadedが既に発火済み
 }

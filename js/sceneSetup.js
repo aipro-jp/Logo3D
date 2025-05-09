@@ -1,42 +1,38 @@
 function initSceneSetup() {
-    // Scene
+    // シーン設定
     scene.background = new THREE.Color(0xcce0ff);
     scene.fog = new THREE.Fog(0xcce0ff, 200, 500);
 
-    // Camera
-    // camera is already initialized in main.js
+    // カメラとレンダラーは main.js で初期化済み
 
-    // Renderer
-    // renderer is already initialized in main.js
-
-    // OrbitControls
+    // オービットコントロール（カメラ操作）
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.25; // 慣性の強さ
     controls.screenSpacePanning = true; // パン操作をスクリーンスペースで行うように変更
-    // controls.maxPolarAngle = Math.PI / 2; // Allow viewing from below
+    // controls.maxPolarAngle = Math.PI / 2; // 下からの視点を許可する場合
 
     initPlane();
     initLights();
     initEnvironmentMap();
-    initParticles(); // Add this line
+    initParticles(); // パーティクル初期化を追加
 }
 
 function initPlane() {
     const planeGeometry = new THREE.PlaneGeometry(1000, 1000, 1, 1);
-    // planeMaterial is no longer needed for the Reflector itself,
-    // as Reflector handles its own appearance for reflection.
+    // Reflector自体が反射用の外観を処理するため、
+    // planeMaterialはReflectorには不要になりました。
 
     plane = new THREE.Reflector(planeGeometry, {
         clipBias: 0.003,
         textureWidth: window.innerWidth * window.devicePixelRatio,
         textureHeight: window.innerHeight * window.devicePixelRatio,
-        color: 0xaaaaaa, // A light grey for the floor surface
-        // recursion: 1 // Optional: for multi-reflections, can be performance intensive
+        color: 0xaaaaaa, // 床面の明るい灰色
+        // recursion: 1 // オプション：複数回反射させる場合。パフォーマンスに影響する可能性あり
     });
     plane.rotation.x = -Math.PI / 2;
     plane.position.y = -100;
-    // plane.receiveShadow = true; // Shadows on a perfect reflector might look odd or not work as expected. Test if needed.
+    // plane.receiveShadow = true; // 完全な反射板への影は奇妙に見えたり、期待通りに動作しない場合があります。必要に応じてテストしてください。
     scene.add(plane);
 }
 
@@ -65,7 +61,7 @@ function initEnvironmentMap() {
 
     rgbeLoader.load('https://threejs.org/examples/textures/equirectangular/royal_esplanade_1k.hdr', function (texture) {
         const envMap = pmremGenerator.fromEquirectangular(texture).texture;
-        scene.environment = envMap; // Re-enable environment map
+        scene.environment = envMap; // 環境マップを再度有効化
         texture.dispose();
         pmremGenerator.dispose();
         if (textMaterial && textMaterial.isMeshStandardMaterial) {
@@ -86,21 +82,21 @@ function initParticles() {
     const velocities = new Float32Array(particleCount * 3); // 速度も保存
  
     for (let i = 0; i < particleCount * 3; i += 3) {
-        // Distribute particles in a sphere around the origin (logo's general area)
-        const radius = 150 + Math.random() * 100; // Spread them out a bit
+        // 原点（ロゴの一般的な領域）の周りに球状にパーティクルを配置
+        const radius = 150 + Math.random() * 100; // 少し広めに配置
         const phi = Math.random() * Math.PI * 2;
         const theta = Math.random() * Math.PI;
 
         positions[i] = radius * Math.sin(theta) * Math.cos(phi);
-        positions[i + 1] = radius * Math.sin(theta) * Math.sin(phi); // Y position
+        positions[i + 1] = radius * Math.sin(theta) * Math.sin(phi);
         positions[i + 2] = radius * Math.cos(theta); 
 
-        // Initialize velocities
-        velocities[i] = (Math.random() - 0.5) * 0.2;   // x velocity
-        velocities[i + 1] = (Math.random() - 0.5) * 0.2; // y velocity
-        velocities[i + 2] = (Math.random() - 0.5) * 0.2; // z velocity
+        // 速度を初期化
+        velocities[i] = (Math.random() - 0.5) * 0.2;   // x方向の速度
+        velocities[i + 1] = (Math.random() - 0.5) * 0.2; // y方向の速度
+        velocities[i + 2] = (Math.random() - 0.5) * 0.2; // z方向の速度
 
-        // Assign a random bright color
+        // ランダムな明るい色を割り当て
         const color = new THREE.Color();
         color.setHSL(Math.random(), 0.7 + Math.random() * 0.3, 0.5 + Math.random() * 0.3); // ランダムな色相、彩度高め、明度もそこそこ
         colors[i] = color.r;
@@ -124,7 +120,7 @@ function initParticles() {
     particleMaterial.vertexColors = true; // 頂点カラーを有効にする
     particleMaterial.needsUpdate = true; // マテリアルの更新を強制
     particleSystem = new THREE.Points(particles, particleMaterial);
-    particleSystem.visible = false; // Initially hidden, controlled by UI
+    particleSystem.visible = false; // 初期状態では非表示（UIで制御）
     scene.add(particleSystem);
     console.log('Particle system initialized.');
 }

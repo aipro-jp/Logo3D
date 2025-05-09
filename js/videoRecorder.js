@@ -1,4 +1,3 @@
-// js/videoRecorder.js
 let mediaRecorder;
 let recordedChunks = [];
 let canvasToRecord;
@@ -8,8 +7,7 @@ let recordButton;
 let videoFormatSelect;
 let recordingStatus;
 let downloadLink;
-
-const FRAME_RATE = 30; // Desired frame rate for recording
+const FRAME_RATE = 30; // 録画の目標フレームレート
 
 export function initVideoRecorder(canvasElement, btnId, formatSelectId, statusId, downloadLinkId) {
     if (!canvasElement || typeof canvasElement.captureStream !== 'function') {
@@ -20,7 +18,7 @@ export function initVideoRecorder(canvasElement, btnId, formatSelectId, statusId
             button.textContent = "録画非対応";
         }
         const controlsContainer = document.getElementById('videoRecordControlsContainer');
-        if (controlsContainer) controlsContainer.style.display = 'none'; // Hide all controls
+        if (controlsContainer) controlsContainer.style.display = 'none'; // すべてのコントロールを非表示
         return false;
     }
 
@@ -37,7 +35,7 @@ export function initVideoRecorder(canvasElement, btnId, formatSelectId, statusId
 
     recordButton.addEventListener('click', toggleRecording);
 
-    // Check MP4 support (basic check)
+    // MP4サポートの確認 (基本的なチェック)
     if (!MediaRecorder.isTypeSupported('video/mp4')) {
         const mp4Option = videoFormatSelect.querySelector('option[value="video/mp4"]');
         if (mp4Option) {
@@ -68,16 +66,13 @@ function startRecording() {
     if (!MediaRecorder.isTypeSupported(selectedMimeType)) {
         alert(`選択された形式 (${selectedMimeType}) はこのブラウザではサポートされていません。WebM (VP9) を試してください。`);
         console.warn(`MIME type ${selectedMimeType} not supported.`);
-        // Fallback or error out
+        // フォールバックするかエラーとする
         if (!MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
             alert('WebM (VP9) もサポートされていません。録画機能は利用できません。');
-            resetRecordingUI(); // Ensure UI is reset
+            resetRecordingUI(); // UIをリセット
             return;
         }
-        // Optionally, force a fallback:
-        // videoFormatSelect.value = 'video/webm;codecs=vp9';
-        // selectedMimeType = 'video/webm;codecs=vp9';
-        return; // For now, just alert and return if selected is not supported
+        return; // 現時点では、選択された形式がサポートされていない場合はアラートを表示して終了
     }
 
     recordedChunks = [];
@@ -105,7 +100,7 @@ function startRecording() {
     };
 
     mediaRecorder.onstop = () => {
-        const blobMimeType = mediaRecorder.mimeType.split(';')[0]; // e.g. video/webm
+        const blobMimeType = mediaRecorder.mimeType.split(';')[0];
         const blob = new Blob(recordedChunks, { type: blobMimeType });
         const videoURL = URL.createObjectURL(blob);
 
@@ -122,7 +117,7 @@ function startRecording() {
             canvasStream = null;
         }
         resetRecordingUI();
-        mediaRecorder = null; // Fully reset
+        mediaRecorder = null; // 完全にリセット
     };
 
     mediaRecorder.onerror = (event) => {
@@ -150,7 +145,7 @@ function stopRecording() {
         recordButton.textContent = "処理中...";
         recordButton.disabled = true;
     } else {
-        resetRecordingUI(); // If not recording, ensure UI is consistent
+        resetRecordingUI(); // 録画中でない場合は、UIの一貫性を保つ
     }
 }
 

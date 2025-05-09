@@ -1,6 +1,6 @@
 function updateAllAnimations(elapsedTime) {
-    if (textMesh) { // textMesh is global
-        if (toggleRotationAnimation.checked) { // UI toggles are global
+    if (textMesh) {
+        if (toggleRotationAnimation.checked) {
             textMesh.rotation.y += 0.005;
         }
 
@@ -29,7 +29,7 @@ function updateAllAnimations(elapsedTime) {
             }
         }
 
-        if (toggleEmissivePulseAnimation.checked && textMaterial && textMaterial.isMeshStandardMaterial) { // textMaterial is global
+        if (toggleEmissivePulseAnimation.checked && textMaterial && textMaterial.isMeshStandardMaterial) {
             const pulseFactor = (Math.sin(elapsedTime * 2.5) + 1) / 2;
             const emissiveColor = new THREE.Color(textMaterial.color.getHex());
             emissiveColor.multiplyScalar(pulseFactor * 0.6);
@@ -70,7 +70,7 @@ function updateAllAnimations(elapsedTime) {
         textMesh.position.z = currentZ;
     }
 
-    // Animate particles if they exist and are visible
+    // パーティクルが存在し、表示されている場合にアニメーションさせる
     if (particleSystem && particleSystem.visible) {
         const positions = particleSystem.geometry.attributes.position.array;
         const velocities = particleSystem.geometry.attributes.velocity.array;
@@ -81,16 +81,16 @@ function updateAllAnimations(elapsedTime) {
             positions[i + 1] += velocities[i+1]; // y
             positions[i + 2] += velocities[i+2]; // z
 
-            // Boundary check and wrap around
+            // 境界チェックと折り返し
             if (positions[i] > boundingBoxSize || positions[i] < -boundingBoxSize) velocities[i] *= -1;
             if (positions[i+1] > boundingBoxSize || positions[i+1] < -boundingBoxSize) velocities[i+1] *= -1;
             if (positions[i+2] > boundingBoxSize || positions[i+2] < -boundingBoxSize) velocities[i+2] *= -1;
         }
-        particleSystem.geometry.attributes.position.needsUpdate = true; // VERY IMPORTANT
+        particleSystem.geometry.attributes.position.needsUpdate = true; // ★★★非常に重要★★★
     }
 }
 
-function resetAllAnimations() { // Renamed from resetAnimations to avoid conflict if any
+function resetAllAnimations() { // 他の resetAnimations との競合を避けるためにリネーム
     toggleRotationAnimation.checked = false;
     toggleFloatingAnimation.checked = false;
     togglePulsingAnimation.checked = false;

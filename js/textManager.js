@@ -12,7 +12,7 @@ const fonts = {
 };
 
 function initTextManager() {
-    loadFontAndUpdateText(); // Load the default font initially
+    loadFontAndUpdateText(); // 初期状態でデフォルトフォントを読み込む
 }
 
 function createText(text, font) {
@@ -42,7 +42,7 @@ function createText(text, font) {
     const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
     textGeometry.translate(-textWidth / 2, 0, 0);
 
-    textMesh = new THREE.Mesh(textGeometry, textMaterial); // Assumes textMaterial is globally available or passed
+    textMesh = new THREE.Mesh(textGeometry, textMaterial); // textMaterial はグローバルに利用可能か、引数で渡されることを想定
     const textHeight = textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y;
     textMesh.userData.baseY = plane.position.y + textHeight * 0.5 + 40;
     textMesh.position.y = textMesh.userData.baseY;
@@ -59,7 +59,7 @@ function createText(text, font) {
 }
 
 function loadFontAndUpdateText() {
-    const selectedFontKey = fontSelect.value; // Assumes fontSelect is globally available
+    const selectedFontKey = fontSelect.value; // fontSelect はグローバルに利用可能であることを想定
     const fontUrl = fonts[selectedFontKey];
 
     if (!fontUrl) {
@@ -73,10 +73,10 @@ function loadFontAndUpdateText() {
         function (font) {
             console.log('Font loaded successfully!');
             loadedFont = font;
-            createText(textInput.value, loadedFont); // Assumes textInput is globally available
-            applySelectedPresetThenUpdateMaterial(); // Assumes this function is globally available or in uiControls.js
+            createText(textInput.value, loadedFont); // textInput はグローバルに利用可能であることを想定
+            applySelectedPresetThenUpdateMaterial(); // この関数はグローバルに利用可能か、uiControls.js にあることを想定
         },
         function (xhr) { console.log('Font loading progress: ' + (xhr.loaded / xhr.total * 100).toFixed(2) + '% loaded'); },
-        function (error) { console.error('An error happened while loading the font:', error); /* ... error display ... */ }
+        function (error) { console.error('An error happened while loading the font:', error); }
     );
 }

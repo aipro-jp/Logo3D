@@ -1,21 +1,21 @@
 function initUIEventListeners() {
-    // Text input
+    // テキスト入力
     textInput.addEventListener('input', (event) => {
-        if (loadedFont) { // loadedFont is global
-            createText(event.target.value, loadedFont); // createText is in textManager.js
+        if (loadedFont) {
+            createText(event.target.value, loadedFont);
         }
     });
 
-    // Font select
-    fontSelect.addEventListener('change', loadFontAndUpdateText); // loadFontAndUpdateText is in textManager.js
+    // フォント選択
+    fontSelect.addEventListener('change', loadFontAndUpdateText);
 
-    // Material property inputs
+    // マテリアルプロパティ入力
     colorInput.addEventListener('input', updateMaterialPropertiesFromUI);
     metalnessInput.addEventListener('input', updateMaterialPropertiesFromUI);
     roughnessInput.addEventListener('input', updateMaterialPropertiesFromUI);
     materialSelect.addEventListener('change', applySelectedPresetThenUpdateMaterial);
 
-    // Lighting controls
+    // ライティングコントロール
     ambientColorInput.addEventListener('input', updateLightsUI);
     ambientIntensityInput.addEventListener('input', updateLightsUI);
     directionalColorInput.addEventListener('input', updateLightsUI);
@@ -23,8 +23,7 @@ function initUIEventListeners() {
     directionalPosXInput.addEventListener('input', updateLightsUI);
     directionalPosYInput.addEventListener('input', updateLightsUI);
     directionalPosZInput.addEventListener('input', updateLightsUI);
-
-    // --- Category Toggle Logic ---
+    // --- カテゴリ表示切り替えロジック ---
     const categoryToggles = [
         { checkbox: toggleLightingCategory, panel: lightingControlsWrapper },
         { checkbox: toggleAnimationCategory, panel: animationControlsWrapper },
@@ -35,7 +34,7 @@ function initUIEventListeners() {
     categoryToggles.forEach(currentToggle => {
         if (currentToggle.checkbox) {
             currentToggle.checkbox.addEventListener('change', function () {
-                // If this checkbox is checked, uncheck all others
+                // このチェックボックスがチェックされた場合、他のすべてのチェックボックスをオフにする
                 if (this.checked) {
                     categoryToggles.forEach(otherToggle => {
                         if (otherToggle.checkbox && otherToggle.checkbox !== this) {
@@ -44,13 +43,12 @@ function initUIEventListeners() {
                     });
                 }
 
-                // Show/hide all panels based on the current state of their respective checkboxes
+                // 各チェックボックスの現在の状態に基づいて、すべてのパネルを表示/非表示にする
                 let anyPanelActive = false;
                 categoryToggles.forEach(toggle => {
                     if (toggle.panel) {
-                        // Ensure panel exists before trying to style it
-                        if (toggle.checkbox && toggle.checkbox.checked) {
-                            toggle.panel.style.display = 'flex'; // Or 'block', 'grid' depending on your CSS for the panel
+                        if (toggle.checkbox && toggle.checkbox.checked) { // パネルが存在することを確認してからスタイルを設定
+                            toggle.panel.style.display = 'flex';
                             anyPanelActive = true;
                         } else {
                             toggle.panel.style.display = 'none';
@@ -58,8 +56,8 @@ function initUIEventListeners() {
                     }
                 });
 
-                // Show or hide the main detail container based on whether any panel is active
-                if (settingsDetailContainer) { // settingsDetailContainer is global from main.js
+                // いずれかのパネルがアクティブかどうかに基づいて、メインの詳細コンテナを表示/非表示にする
+                if (settingsDetailContainer) {
                     settingsDetailContainer.style.display = anyPanelActive ? 'block' : 'none';
                 }
             });
@@ -73,47 +71,47 @@ function initUIEventListeners() {
         }
     });
 
-    // --- Other Toggles (Floor, Particles) ---
-    if (toggleFloorVisibility && plane) { // plane is global
+    // --- その他のトグル (床、パーティクル) ---
+    if (toggleFloorVisibility && plane) {
         toggleFloorVisibility.addEventListener('change', function () {
             plane.visible = this.checked;
         });
     }
 
-    if (toggleParticleEffect && particleSystem) { // particleSystem is global
+    if (toggleParticleEffect && particleSystem) {
         toggleParticleEffect.addEventListener('change', function () {
             particleSystem.visible = this.checked;
         });
     }
 
-    // Animation reset button
+    // アニメーションリセットボタン
     if (resetAnimationsButton) {
-        resetAnimationsButton.addEventListener('click', resetAllAnimations); // resetAllAnimations is in animations.js
+        resetAnimationsButton.addEventListener('click', resetAllAnimations);
     }
 
-    // Bloom effect UI listeners
-    if (toggleBloomEffect && bloomPass && bloomStrengthInput && bloomRadiusInput && bloomThresholdInput) { // bloomPass is global
+    // ブルームエフェクトUIリスナー
+    if (toggleBloomEffect && bloomPass && bloomStrengthInput && bloomRadiusInput && bloomThresholdInput) {
         toggleBloomEffect.addEventListener('change', updateBloomEffectUI);
         bloomStrengthInput.addEventListener('input', updateBloomEffectUI);
         bloomRadiusInput.addEventListener('input', updateBloomEffectUI);
         bloomThresholdInput.addEventListener('input', updateBloomEffectUI);
     }
 
-    // DOF effect UI listeners
-    if (toggleDofEffect && bokehPass && dofFocusInput && dofApertureInput && dofMaxblurInput) { // bokehPass is global
+    // DOF (被写界深度) エフェクトUIリスナー
+    if (toggleDofEffect && bokehPass && dofFocusInput && dofApertureInput && dofMaxblurInput) {
         toggleDofEffect.addEventListener('change', updateDofEffectUI);
         dofFocusInput.addEventListener('input', updateDofEffectUI);
         dofApertureInput.addEventListener('input', updateDofEffectUI);
         dofMaxblurInput.addEventListener('input', updateDofEffectUI);
     }
 
-    // Help Panel Toggle
+    // ヘルプパネルの表示切り替え
     const helpButton = document.getElementById('helpButton');
     const helpPanel = document.getElementById('helpPanel');
 
     if (helpButton && helpPanel) {
         helpButton.addEventListener('click', function(event) {
-            event.stopPropagation(); // Prevent click from immediately closing panel if panel is also a close trigger
+            event.stopPropagation(); // パネル自体も閉じるトリガーである場合に、クリックが即座にパネルを閉じるのを防ぐ
             helpPanel.style.display = helpPanel.style.display === 'none' ? 'block' : 'none';
         });
         helpPanel.addEventListener('click', function() {
@@ -121,7 +119,7 @@ function initUIEventListeners() {
         });
     }
 
-    // Initial UI updates
+    // UIの初期更新
     updateLightsUI();
     updateBloomEffectUI();
     updateDofEffectUI();
@@ -141,12 +139,12 @@ function updateMaterialPropertiesFromUI() {
             textMaterial = new THREE.MeshPhongMaterial();
         } else {
             textMaterial = new THREE.MeshStandardMaterial();
-            if (scene.environment) { // scene is global
+            if (scene.environment) {
                 textMaterial.envMap = scene.environment;
                 textMaterial.envMapIntensity = 1.5;
             }
         }
-        if (textMesh) textMesh.material = textMaterial; // textMesh is global
+        if (textMesh) textMesh.material = textMaterial;
     }
 
     if (selectedMaterialType === 'phong') {
@@ -182,8 +180,8 @@ function applySelectedPresetThenUpdateMaterial() {
     else if (selectedMaterialType === 'silver') { colorInput.value = '#C0C0C0'; metalnessInput.value = "1.0"; roughnessInput.value = "0.1"; }
     else if (selectedMaterialType === 'copper') { colorInput.value = '#B87333'; metalnessInput.value = "1.0"; roughnessInput.value = "0.2"; }
     else if (selectedMaterialType === 'standard_nonmetal') { metalnessInput.value = "0.0"; roughnessInput.value = "0.8"; }
-    // For standard_metal, we don't change color, just ensure metalness is high
-    else if (selectedMaterialType === 'standard_metal') { metalnessInput.value = "1.0"; roughnessInput.value = "0.3"; } // Example roughness
+    // standard_metalの場合、色は変更せず、metalnessが高いことを確認する
+    else if (selectedMaterialType === 'standard_metal') { metalnessInput.value = "1.0"; roughnessInput.value = "0.3"; }
     updateMaterialPropertiesFromUI();
 }
 
